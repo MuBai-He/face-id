@@ -49,14 +49,14 @@ jobs:
         run: xcodebuild -project "Face ID.xcodeproj" -scheme "Face ID" -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build
       - name: Validate embedded LaunchDaemon plist
         if: runner.os == 'macOS'
-        run: plutil -lint SystemAuth/LaunchDaemon/com.joeqiao.faceid.authd.plist
+        run: plutil -lint SystemAuth/LaunchDaemon/com.mubai.faceid.authd.plist
       - name: Verify SMAppService bundle layout
         if: runner.os == 'macOS'
         run: |
-          grep -q '<key>BundleProgram</key>' SystemAuth/LaunchDaemon/com.joeqiao.faceid.authd.plist
-          grep -q 'Contents/Library/PrivilegedHelperTools/faceid-authd' SystemAuth/LaunchDaemon/com.joeqiao.faceid.authd.plist
+          grep -q '<key>BundleProgram</key>' SystemAuth/LaunchDaemon/com.mubai.faceid.authd.plist
+          grep -q 'Contents/Library/PrivilegedHelperTools/faceid-authd' SystemAuth/LaunchDaemon/com.mubai.faceid.authd.plist
       - name: Validate LaunchDaemon property list
         if: runner.os == 'macOS'
-        run: plutil -lint SystemAuth/LaunchDaemon/com.joeqiao.faceid.authd.plist
+        run: plutil -lint SystemAuth/LaunchDaemon/com.mubai.faceid.authd.plist
       - name: Isolated control-flow and protocol tests
         run: sudo "$(command -v python3)" SystemAuth/tests/test_pam_transport.py
