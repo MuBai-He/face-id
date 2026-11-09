@@ -135,11 +135,13 @@ public enum FaceIDAuthXPCClient {
         _ reply: xpc_object_t,
         peerEUID: uid_t
     ) throws -> FaceIDAuthXPCStatusResponse {
-        guard peerEUID == 0 else {
-            throw FaceIDAuthXPCClientError.daemonNotRoot
-        }
+        // A missing service or transport error is not evidence of a
+        // non-root daemon. Classify the XPC reply before inspecting peer credentials.
         guard xpc_get_type(reply) == XPC_TYPE_DICTIONARY else {
             throw FaceIDAuthXPCClientError.connectionFailed
+        }
+        guard peerEUID == 0 else {
+            throw FaceIDAuthXPCClientError.daemonNotRoot
         }
         guard xpc_dictionary_get_int64(reply, FaceIDAuthXPCProtocol.versionKey)
                 == FaceIDAuthXPCProtocol.version else {
