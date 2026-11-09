@@ -40,7 +40,7 @@ final class ClientTrustPolicyTests: XCTestCase {
         let directory = try makeDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
         let requirement = try validRequirement()
-        try writeRequirement(requirement, to: directory)
+        _ = try writeRequirement(requirement, to: directory)
 
         let policy = try ClientTrustPolicy(directoryURL: directory, expectedOwnerUID: getuid())
         XCTAssertEqual(policy.codeSigningRequirement, requirement)
@@ -85,7 +85,7 @@ final class ClientTrustPolicyTests: XCTestCase {
     func testMalformedOrAdHocRequirementIsRejected() throws {
         let directory = try makeDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
-        try writeRequirement("identifier \"com.joeqiao.faceid\"", to: directory)
+        _ = try writeRequirement("identifier \"com.joeqiao.faceid\"", to: directory)
 
         XCTAssertThrowsError(
             try ClientTrustPolicy(directoryURL: directory, expectedOwnerUID: getuid())

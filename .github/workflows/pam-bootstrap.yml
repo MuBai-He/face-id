@@ -39,5 +39,8 @@ jobs:
       - name: Build privileged XPC daemon
         if: runner.os == 'macOS'
         run: swift build --package-path SystemAuth/FaceIDAuthService --product faceid-authd
+      - name: Validate LaunchDaemon property list
+        if: runner.os == 'macOS'
+        run: plutil -lint SystemAuth/LaunchDaemon/com.joeqiao.faceid.authd.plist
       - name: Isolated control-flow and protocol tests
         run: sudo "$(command -v python3)" SystemAuth/tests/test_pam_transport.py
