@@ -88,3 +88,31 @@ The recognition target also exposes `FaceIDTemplateMatcher`:
 - Requires the caller to pass an explicit similarity threshold (minimum 0.30). There is no silent default inherited from the app's UI settings.
 
 The threshold is only a parameterized policy hook. It is not calibrated for system authentication and must not be enabled in PAM until evaluated on representative genuine/impostor data.
+
+
+## Phase 3 bootstrap: privileged XPC daemon
+
+The package now defines an executable product named faceid-authd, a small
+FaceIDAuthIPC policy module, and a LaunchDaemon packaging template.
+
+- The daemon refuses to run unless its effective UID is root.
+- It uses a launchd Mach service and Apple's public
+  xpc_connection_set_peer_code_signing_requirement API. The kernel checks the
+  peer's code signature for every message; the implementation does not use a
+  PID-only lookup, private auditToken properties, or private XPC audit-token APIs.
+- The signing requirement is loaded only from a root-owned, mode-0700 directory
+  and a root-owned, mode-0600 regular file. The requirement pins the app bundle
+  identifier and the 10-character Developer ID Team ID.
+- If the trust policy is absent or malformed, every incoming connection is
+  rejected. There is no development-mode bypass.
+- The only XPC operation is a status probe. It always replies unavailable.
+  There is no method that can approve PAM, enroll a user, or accept a client-
+  supplied embedding or liveness result.
+- The daemon checks that a peer is non-root and has a nonzero audit-session ID
+  before replying. Full console-session/PAM-session binding is still outstanding.
+
+The LaunchDaemon plist is a packaging template, not an install instruction.
+The installer must derive the actual Team ID from the signed application,
+write the trust requirement as root, sign and install the daemon, and support
+rollback/uninstall. No PAM stack, AuthorizationDB, SIP, or FileVault setting
+is changed by this phase.
