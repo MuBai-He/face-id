@@ -8,7 +8,7 @@
  * user/session before consulting its root-owned face templates.
  */
 #ifndef FID_AUTH_SOCKET
-#define FID_AUTH_SOCKET "/var/run/com.joeqiao.faceid.authd.sock"
+#define FID_AUTH_SOCKET "/var/run/com.mubai.faceid.authd.sock"
 #endif
 #define FID_AUTH_MAGIC 0x46494441u /* "FIDA" */
 #define FID_AUTH_VERSION 1u
