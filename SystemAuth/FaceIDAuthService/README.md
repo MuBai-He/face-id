@@ -1,15 +1,16 @@
 # FaceIDAuthService foundation
 
-This Swift package is the first service-side building block. It currently ships
-only an encrypted, permission-checked template store. It is **not a LaunchDaemon,
-does not open a socket or XPC listener, does not capture camera frames, and is
-not connected to PAM**.
+This Swift package contains encrypted template storage, ArcFace recognition,
+XPC IPC, and the status-only faceid-authd LaunchDaemon executable. It is
+**not yet a working face-authentication feature**: the daemon's only XPC
+operation returns unavailable, and no camera capture or PAM approval path
+is connected.
 
 ## Current contract
 
 - Production initialization is parameterless and requires effective UID 0.
 - The store lives at
-  `/Library/Application Support/com.joeqiao.faceid`, owned by root with no
+  `/Library/Application Support/com.mubai.faceid`, owned by root with no
   group/other access.
 - The AES-GCM key and ciphertext are separate files in that root-only directory,
   each with mode 0600. FileVault should remain enabled. Because the key is stored
@@ -50,11 +51,11 @@ touch the production path, install a LaunchDaemon, or modify PAM.
 
 ## Not implemented yet
 
-- LaunchDaemon lifecycle, XPC listener, caller audit-token/code-signature checks.
 - CameraAgent and a trusted capture/session handshake.
-- ArcFace inference in the privileged service.
-- Administrator-authorized enrollment and migration.
-- PAM-to-service approval path, installer, rollback, and uninstall.
+- Administrator-authorized enrollment and migration into the root-owned store.
+- Binding the PAM request to the active console/audit session.
+- A production PAM-to-service approval path and end-to-end security review.
+- Signed release packaging, rollback, and uninstall verification on real Macs.
 - `su`, loginwindow, screensaver, or FileVault integration.
 
 Until those pieces are implemented and reviewed, the PAM diagnostic responder
@@ -123,13 +124,13 @@ AuthorizationDB, SIP, or FileVault setting is changed by this phase.
 The IPC library now includes a one-shot status client:
 
 - Reads the Team ID from the current process's code signature using Security.framework.
-- Builds a daemon requirement pinning both com.joeqiao.faceid.authd and the same Team ID.
+- Builds a daemon requirement pinning both com.mubai.faceid.authd and the same Team ID.
 - Applies the peer code-signing requirement before activating the XPC connection.
 - Sends only protocol version 1 and the status operation.
 - Verifies that the reply peer has EUID 0, checks protocol version and known response reasons, and rejects any status other than unavailable.
 - Uses a bounded timeout and cancels the one-shot connection after the reply.
 
-This client intentionally cannot return an authorization success. It is not yet linked into the Face ID app's Xcode project, and it has not been integration-tested against an installed, correctly signed LaunchDaemon. The production installer must sign the daemon with the same Developer ID Team ID and provision the daemon's root-owned client requirement.
+This client intentionally cannot return an authorization success. It is linked into the Face ID app's Xcode project, but has not yet been integration-tested against an installed, correctly signed LaunchDaemon. The app and daemon must be signed by the same Apple Developer Team.
 
 
 ## Phase 3 extension: Face ID app integration
@@ -154,9 +155,9 @@ its launchd property list at \`Contents/Library/LaunchDaemons/\`. The plist uses
 API (macOS 13+), not by writing directly to \`/Library/LaunchDaemons\`.
 
 The daemon derives its client code-signing requirement from its own verified
-code signature. It requires the daemon identifier \`com.joeqiao.faceid.authd\`
+code signature. It requires the daemon identifier \`com.mubai.faceid.authd\`
 and a valid Apple Developer Team ID, then pins the GUI app identifier
-\`com.joeqiao.faceid\` to that same Team ID. An ad-hoc/unsigned daemon refuses
+\`com.mubai.faceid\` to that same Team ID. An ad-hoc/unsigned daemon refuses
 to start. This removes the previous root-owned trust-policy file from the
 installation flow.
 
@@ -169,3 +170,17 @@ Management. No PAM configuration is changed.
 \`unavailable\`; no camera capture, enrollment, template migration, PAM socket
 bridge, or approval path exists. Do not add the PAM rule or use this service
 to authenticate privileged operations.
+
+
+## Fork identity and Keychain migration
+
+This fork uses the `com.mubai.faceid` namespace for the GUI app, Keychain
+service/access group, privileged daemon, and Mach service. The Xcode test bundle
+uses `com.mubai.faceid.tests`. The PAM transport socket is
+`/var/run/com.mubai.faceid.authd.sock`.
+
+Changing the signing Team and Keychain access group creates a new Keychain
+namespace. Existing Keychain items from the original developer's Team are not
+deleted, but this fork cannot automatically read them under the new Team ID.
+Do not delete the old app or Keychain items as part of this code migration.
+A deliberate migration/re-enrollment flow is still required.
