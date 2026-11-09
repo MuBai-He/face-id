@@ -60,8 +60,18 @@ class TransportTest(unittest.TestCase):
         cls.dll.pam_sm_authenticate.argtypes = [ctypes.POINTER(MockPAM), ctypes.c_int,
                                                 ctypes.c_int, ctypes.c_void_p]
         cls.dll.pam_sm_authenticate.restype = ctypes.c_int
-        cls.name = "nobody"
-        cls.uid = pwd.getpwnam(cls.name).pw_uid
+        # Prefer the account that invoked sudo. On some macOS installations,
+        # the special "nobody" identity (UID -2) cannot be used as a normal
+        # child process, and its interpreter may be inaccessible. The sudo
+        # invoker is an ordinary non-root account and still exercises the
+        # exact root-path / non-root-peer trust boundary.
+        sudo_uid = os.environ.get("SUDO_UID")
+        if sudo_uid is not None:
+            account = pwd.getpwuid(int(sudo_uid))
+        else:
+            account = pwd.getpwnam("nobody")
+        cls.name = account.pw_name
+        cls.uid = account.pw_uid
         assert cls.uid != 0
 
     @classmethod
