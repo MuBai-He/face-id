@@ -24,7 +24,7 @@ struct DetectedFace {
     let pitch: Float?
     /// Facial landmarks (eyes, nose, mouth, etc.), when available. Feeds
     /// `FaceAligner` for canonical 112x112 alignment ahead of ArcFace.
-    nonisolated let landmarks: VNFaceLandmarks2D?
+    let landmarks: VNFaceLandmarks2D?
     /// Needed by `landmarks.pointsInImage(_:)` to convert normalized landmark points into `boundingBox`'s pixel space.
     let imageSize: CGSize
 }
