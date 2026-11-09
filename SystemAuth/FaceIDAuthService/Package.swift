@@ -10,7 +10,7 @@ let package = Package(
     ],
     targets: [
         .target(name: "FaceIDAuthStore"),
-        .target(name: "FaceIDAuthRecognition"),
+        .target(name: "FaceIDAuthRecognition", dependencies: ["FaceIDAuthStore"]),
         .testTarget(
             name: "FaceIDAuthStoreTests",
             dependencies: ["FaceIDAuthStore", "FaceIDAuthRecognition"]
