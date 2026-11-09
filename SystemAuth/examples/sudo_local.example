@@ -1,0 +1,6 @@
+# NOT TO BE INSTALLED YET.
+# Only install once a privileged, independently verified recognition daemon
+# has been implemented, signed and tested. The current probe NEVER approves.
+# Preserve existing local PAM rules when installing a tested version.
+auth sufficient /Library/Security/FaceID/pam_faceid.so
+auth sufficient pam_tid.so

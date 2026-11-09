@@ -1,0 +1,37 @@
+name: PAM bootstrap
+
+on:
+  pull_request:
+    paths:
+      - 'SystemAuth/**'
+      - 'FaceID/Domain/Face/FaceRecognitionPipeline.swift'
+      - '.github/workflows/pam-bootstrap.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pam-bootstrap-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  transport:
+    name: Transport (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Compile against the real macOS PAM SDK
+        if: runner.os == 'macOS'
+        run: |
+          make -C SystemAuth/PAM
+          make -C SystemAuth/Daemon
+      - name: Isolated control-flow and protocol tests
+        run: sudo "$(command -v python3)" SystemAuth/tests/test_pam_transport.py
