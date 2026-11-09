@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B10000000000000000000009 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* main.swift */; };
+		B1000000000000000000000A /* FaceIDAuthIPC in Daemon Frameworks */ = {isa = PBXBuildFile; productRef = C2A3B4C5D6E7F8091A2B3C4E /* FaceIDAuthIPC */; };
+		B1000000000000000000000B /* faceid-authd in Embed Daemon */ = {isa = PBXBuildFile; fileRef = B10000000000000000000004 /* faceid-authd */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B1000000000000000000000C /* LaunchDaemon plist in Embed Plist */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* com.joeqiao.faceid.authd.plist */; };
+
 		17280C29A9398CBFDE0080BF /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 020486DA199A87C9F636359E /* Sparkle */; };
 		C2A3B4C5D6E7F8091A2B3C4D /* FaceIDAuthIPC in Frameworks */ = {isa = PBXBuildFile; productRef = C2A3B4C5D6E7F8091A2B3C4E /* FaceIDAuthIPC */; };
 /* End PBXBuildFile section */
@@ -22,6 +27,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B10000000000000000000002 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceIDAuthService/Sources/FaceIDAuthDaemon/main.swift; sourceTree = "<group>"; };
+		B10000000000000000000003 /* com.joeqiao.faceid.authd.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = com.joeqiao.faceid.authd.plist; sourceTree = "<group>"; };
+		B10000000000000000000004 /* faceid-authd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = faceid-authd; sourceTree = BUILT_PRODUCTS_DIR; };
+
 		601C493C300FFC8400D3DE9D /* Face ID.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Face ID.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000000000000000000003 /* FaceIDTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FaceIDTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -53,6 +62,31 @@
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		B1000000000000000000000D /* Embed faceid-authd */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "Contents/Library/PrivilegedHelperTools";
+			dstSubfolderSpec = 1;
+			files = (
+				B1000000000000000000000B /* faceid-authd in Embed Daemon */,
+			);
+			name = "Embed LaunchDaemon Executable";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B1000000000000000000000E /* Embed LaunchDaemon plist */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "Contents/Library/LaunchDaemons";
+			dstSubfolderSpec = 1;
+			files = (
+				B1000000000000000000000C /* LaunchDaemon plist in Embed Plist */,
+			);
+			name = "Embed LaunchDaemon Property List";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		601C4939300FFC8400D3DE9D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -73,10 +107,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B10000000000000000000001 /* SystemAuth */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000002 /* main.swift */,
+				B10000000000000000000003 /* com.joeqiao.faceid.authd.plist */,
+			);
+			path = SystemAuth;
+			sourceTree = "<group>";
+		};
+
 		601C4933300FFC8400D3DE9D = {
 			isa = PBXGroup;
 			children = (
 				601C493E300FFC8400D3DE9D /* FaceID */,
+				B10000000000000000000001 /* SystemAuth */,
 				A10000000000000000000002 /* FaceIDTests */,
 				601C493D300FFC8400D3DE9D /* Products */,
 			);
@@ -87,6 +132,7 @@
 			children = (
 				601C493C300FFC8400D3DE9D /* Face ID.app */,
 				A10000000000000000000003 /* FaceIDTests.xctest */,
+				B10000000000000000000004 /* faceid-authd */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -94,6 +140,26 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		B10000000000000000000005 /* faceid-authd */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B10000000000000000000011 /* Build configuration list for PBXNativeTarget "faceid-authd" */;
+			buildPhases = (
+				B10000000000000000000006 /* Sources */,
+				B10000000000000000000007 /* Frameworks */,
+				B10000000000000000000008 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "faceid-authd";
+			packageProductDependencies = (
+				C2A3B4C5D6E7F8091A2B3C4E /* FaceIDAuthIPC */,
+			);
+			productName = "faceid-authd";
+			productReference = B10000000000000000000004 /* faceid-authd */;
+			productType = "com.apple.product-type.tool";
+		};
 		601C493B300FFC8400D3DE9D /* Face ID */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 601C4947300FFC8500D3DE9D /* Build configuration list for PBXNativeTarget "Face ID" */;
@@ -101,10 +167,13 @@
 				601C4938300FFC8400D3DE9D /* Sources */,
 				601C4939300FFC8400D3DE9D /* Frameworks */,
 				601C493A300FFC8400D3DE9D /* Resources */,
+				B1000000000000000000000D /* Embed faceid-authd */,
+				B1000000000000000000000E /* Embed LaunchDaemon plist */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				B10000000000000000000010 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				601C493E300FFC8400D3DE9D /* FaceID */,
@@ -158,6 +227,9 @@
 						CreatedOnToolsVersion = 26.6;
 						TestTargetID = 601C493B300FFC8400D3DE9D;
 					};
+					B10000000000000000000005 = {
+						CreatedOnToolsVersion = 27.2;
+					};
 				};
 			};
 			buildConfigurationList = 601C4937300FFC8400D3DE9D /* Build configuration list for PBXProject "Face ID" */;
@@ -181,6 +253,7 @@
 			targets = (
 				601C493B300FFC8400D3DE9D /* Face ID */,
 				A10000000000000000000001 /* FaceIDTests */,
+				B10000000000000000000005 /* faceid-authd */,
 			);
 		};
 /* End PBXProject section */
@@ -203,6 +276,30 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		B10000000000000000000006 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B10000000000000000000009 /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+
+		B10000000000000000000007 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B1000000000000000000000A /* FaceIDAuthIPC in Daemon Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B10000000000000000000008 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		601C4938300FFC8400D3DE9D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -220,6 +317,19 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		B1000000000000000000000F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 601C4934300FFC8400D3DE9D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B10000000000000000000005;
+			remoteInfo = "faceid-authd";
+		};
+		B10000000000000000000010 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B10000000000000000000005 /* faceid-authd */;
+			targetProxy = B1000000000000000000000F /* PBXContainerItemProxy */;
+		};
+
 		A1000000000000000000000A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 601C493B300FFC8400D3DE9D /* Face ID */;
@@ -456,6 +566,40 @@
 		};
 /* End XCBuildConfiguration section */
 
+/* Begin XCBuildConfiguration section */
+		B10000000000000000000012 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.joeqiao.faceid.authd;
+				PRODUCT_NAME = faceid-authd;
+				SKIP_INSTALL = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		B10000000000000000000013 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.joeqiao.faceid.authd;
+				PRODUCT_NAME = faceid-authd;
+				SKIP_INSTALL = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
 /* Begin XCConfigurationList section */
 		601C4937300FFC8400D3DE9D /* Build configuration list for PBXProject "Face ID" */ = {
 			isa = XCConfigurationList;
@@ -471,6 +615,15 @@
 			buildConfigurations = (
 				601C4948300FFC8500D3DE9D /* Debug */,
 				601C4949300FFC8500D3DE9D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B10000000000000000000011 /* Build configuration list for PBXNativeTarget "faceid-authd" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B10000000000000000000012 /* Debug */,
+				B10000000000000000000013 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

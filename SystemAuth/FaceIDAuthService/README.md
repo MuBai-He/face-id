@@ -143,3 +143,29 @@ report that the daemon is reachable but authentication is not ready. It does
 not start camera capture, enroll a face, approve an authentication request, or
 change any PAM configuration. If the app is ad-hoc signed or has no Developer
 Team ID, the client refuses to connect.
+
+
+## Phase 4: bundled LaunchDaemon registration
+
+The Face ID Xcode project now builds the \`faceid-authd\` command-line target,
+embeds it at \`Contents/Library/PrivilegedHelperTools/faceid-authd\`, and embeds
+its launchd property list at \`Contents/Library/LaunchDaemons/\`. The plist uses
+\`BundleProgram\` and is registered through Apple's \`SMAppService.daemon\`
+API (macOS 13+), not by writing directly to \`/Library/LaunchDaemons\`.
+
+The daemon derives its client code-signing requirement from its own verified
+code signature. It requires the daemon identifier \`com.joeqiao.faceid.authd\`
+and a valid Apple Developer Team ID, then pins the GUI app identifier
+\`com.joeqiao.faceid\` to that same Team ID. An ad-hoc/unsigned daemon refuses
+to start. This removes the previous root-owned trust-policy file from the
+installation flow.
+
+The About page provides explicit Register, open Login Items for approval,
+Unregister, refresh, and XPC diagnostic actions. Registration is opt-in and
+requires macOS user approval. Unregister stops the helper through Service
+Management. No PAM configuration is changed.
+
+**Still not an authentication feature:** the XPC endpoint only returns
+\`unavailable\`; no camera capture, enrollment, template migration, PAM socket
+bridge, or approval path exists. Do not add the PAM rule or use this service
+to authenticate privileged operations.

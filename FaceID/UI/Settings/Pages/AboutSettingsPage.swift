@@ -79,12 +79,57 @@ struct AboutSettingsPage: View {
             SettingsGroupDivider()
 
             SettingsActionRowContent(
-                title: "系统认证服务",
-                subtitle: environment.systemAuthServiceStatus.statusDescription,
-                buttonTitle: environment.systemAuthServiceStatus.buttonTitle,
-                isEnabled: environment.systemAuthServiceStatus.canCheck
+                title: "系统服务状态",
+                subtitle: environment.systemAuthServiceStatus.registrationDescription,
+                buttonTitle: "刷新",
+                isEnabled: true
             ) {
-                environment.systemAuthServiceStatus.check()
+                environment.systemAuthServiceStatus.refreshRegistrationStatus()
+            }
+
+            SettingsGroupDivider()
+
+            SettingsActionRowContent(
+                title: "安装系统服务",
+                subtitle: "通过 macOS Service Management 注册，需由你在系统设置中批准",
+                buttonTitle: "安装",
+                isEnabled: environment.systemAuthServiceStatus.canRegister
+            ) {
+                environment.systemAuthServiceStatus.registerService()
+            }
+
+            SettingsGroupDivider()
+
+            SettingsActionRowContent(
+                title: "批准后台服务",
+                subtitle: "仅当系统要求批准时使用",
+                buttonTitle: "打开设置",
+                isEnabled: environment.systemAuthServiceStatus.canOpenLoginItems
+            ) {
+                environment.systemAuthServiceStatus.openLoginItemsSettings()
+            }
+
+            SettingsGroupDivider()
+
+            SettingsActionRowContent(
+                title: "卸载系统服务",
+                subtitle: "停止并注销 Face ID 特权服务，不修改 PAM 配置",
+                buttonTitle: "卸载",
+                isEnabled: environment.systemAuthServiceStatus.canUnregister,
+                action: {
+                    environment.systemAuthServiceStatus.unregisterService()
+                }
+            }
+
+            SettingsGroupDivider()
+
+            SettingsActionRowContent(
+                title: "XPC 连接诊断",
+                subtitle: environment.systemAuthServiceStatus.connectionDescription,
+                buttonTitle: environment.systemAuthServiceStatus.isCheckingConnection ? "检查中" : "检查",
+                isEnabled: !environment.systemAuthServiceStatus.isCheckingConnection
+            ) {
+                environment.systemAuthServiceStatus.checkConnection()
             }
 
             SettingsGroupDivider()

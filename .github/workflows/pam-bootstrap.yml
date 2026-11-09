@@ -47,6 +47,9 @@ jobs:
       - name: Build Face ID app with local authentication package
         if: runner.os == 'macOS'
         run: xcodebuild -project "Face ID.xcodeproj" -scheme "Face ID" -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build
+      - name: Validate embedded LaunchDaemon plist
+        if: runner.os == 'macOS'
+        run: plutil -lint SystemAuth/LaunchDaemon/com.joeqiao.faceid.authd.plist
       - name: Validate LaunchDaemon property list
         if: runner.os == 'macOS'
         run: plutil -lint SystemAuth/LaunchDaemon/com.joeqiao.faceid.authd.plist

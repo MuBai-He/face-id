@@ -1,29 +1,24 @@
 import Foundation
 import Darwin
+import Security
 
 public enum ClientTrustPolicyError: Error, Equatable {
     case notPrivileged
-    case unsafeDirectory
-    case missingPolicy
-    case unsafePolicyFile
+    case signingInformationUnavailable(Int32)
+    case invalidDaemonSigningIdentifier
+    case missingTeamIdentifier
     case invalidTeamIdentifier
-    case malformedRequirement
-    case readFailure
 }
 
-/// Root-owned trust anchor for the GUI application's XPC connection.
+/// Derives the GUI client's trust requirement from the running daemon's own
+/// verified code signature. Both executables must be signed by the same Apple
+/// Developer Team; the GUI bundle identifier is pinned as well.
 ///
-/// The installer must derive the Team ID from the signed application it is
-/// installing, validate that signature, and write this requirement as root.
-/// The daemon never accepts a Team ID or requirement supplied by an XPC client.
+/// This removes mutable on-disk trust configuration from the installation
+/// path. An ad-hoc or unsigned daemon has no Team ID and refuses to start.
 public struct ClientTrustPolicy: Sendable {
-    public static let productionDirectory = URL(
-        fileURLWithPath: "/Library/Application Support/com.joeqiao.faceid",
-        isDirectory: true
-    )
-    public static let policyFileName = "client-requirement.txt"
     public static let expectedSigningIdentifier = "com.joeqiao.faceid"
-    public static let maximumPolicyBytes = 512
+    public static let expectedDaemonSigningIdentifier = "com.joeqiao.faceid.authd"
 
     public let codeSigningRequirement: String
 
@@ -31,18 +26,16 @@ public struct ClientTrustPolicy: Sendable {
         guard geteuid() == 0 else {
             throw ClientTrustPolicyError.notPrivileged
         }
-        self.codeSigningRequirement = try Self.load(
-            from: Self.productionDirectory,
-            expectedOwnerUID: 0
-        )
+        self.codeSigningRequirement = try Self.requirementForRunningDaemon()
     }
 
-    /// Test-only injection point. Production code must use the parameterless
-    /// initializer so callers cannot select a user-owned trust directory.
-    init(directoryURL: URL, expectedOwnerUID: uid_t) throws {
-        self.codeSigningRequirement = try Self.load(
-            from: directoryURL,
-            expectedOwnerUID: expectedOwnerUID
+    /// Test seam for deterministic policy construction without a signed daemon.
+    init(daemonSigningIdentifier: String, teamIdentifier: String) throws {
+        guard daemonSigningIdentifier == Self.expectedDaemonSigningIdentifier else {
+            throw ClientTrustPolicyError.invalidDaemonSigningIdentifier
+        }
+        self.codeSigningRequirement = try Self.makeCodeSigningRequirement(
+            teamIdentifier: teamIdentifier
         )
     }
 
@@ -60,69 +53,43 @@ public struct ClientTrustPolicy: Sendable {
         }
     }
 
-    private static func validateRequirement(_ value: String) throws {
-        let prefix = "anchor apple generic and identifier \"\(expectedSigningIdentifier)\" and certificate leaf[subject.OU] = \""
-        guard value.hasPrefix(prefix), value.hasSuffix("\"") else {
-            throw ClientTrustPolicyError.malformedRequirement
-        }
-        let teamIdentifier = String(value.dropFirst(prefix.count).dropLast())
-        guard isValidTeamIdentifier(teamIdentifier),
-              try makeCodeSigningRequirement(teamIdentifier: teamIdentifier) == value else {
-            throw ClientTrustPolicyError.malformedRequirement
-        }
-    }
-
-    private static func load(from directoryURL: URL, expectedOwnerUID: uid_t) throws -> String {
-        var directoryInfo = stat()
-        guard lstat(directoryURL.path, &directoryInfo) == 0,
-              (directoryInfo.st_mode & S_IFMT) == S_IFDIR,
-              directoryInfo.st_uid == expectedOwnerUID,
-              (directoryInfo.st_mode & 0o077) == 0 else {
-            throw ClientTrustPolicyError.unsafeDirectory
+    private static func requirementForRunningDaemon() throws -> String {
+        var code: SecCode?
+        let codeStatus = SecCodeCopySelf(SecCSFlags(rawValue: 0), &code)
+        guard codeStatus == errSecSuccess, let code else {
+            throw ClientTrustPolicyError.signingInformationUnavailable(codeStatus)
         }
 
-        let policyURL = directoryURL.appendingPathComponent(policyFileName)
-        let descriptor = Darwin.open(policyURL.path, O_RDONLY | O_NOFOLLOW)
-        guard descriptor >= 0 else {
-            if errno == ENOENT {
-                throw ClientTrustPolicyError.missingPolicy
-            }
-            throw ClientTrustPolicyError.unsafePolicyFile
-        }
-        defer { _ = close(descriptor) }
-
-        var fileInfo = stat()
-        guard fstat(descriptor, &fileInfo) == 0,
-              (fileInfo.st_mode & S_IFMT) == S_IFREG,
-              fileInfo.st_uid == expectedOwnerUID,
-              (fileInfo.st_mode & 0o077) == 0,
-              fileInfo.st_nlink == 1,
-              fileInfo.st_size > 0,
-              fileInfo.st_size <= Int64(maximumPolicyBytes) else {
-            throw ClientTrustPolicyError.unsafePolicyFile
+        let validityStatus = SecCodeCheckValidity(
+            code,
+            SecCSFlags(rawValue: 0),
+            nil
+        )
+        guard validityStatus == errSecSuccess else {
+            throw ClientTrustPolicyError.signingInformationUnavailable(validityStatus)
         }
 
-        var bytes = [UInt8](repeating: 0, count: Int(fileInfo.st_size))
-        var offset = 0
-        while offset < bytes.count {
-            let remaining = bytes.count - offset
-            let count = bytes.withUnsafeMutableBytes { raw in
-                Darwin.read(descriptor, raw.baseAddress!.advanced(by: offset), remaining)
-            }
-            if count < 0 && errno == EINTR { continue }
-            guard count > 0 else { throw ClientTrustPolicyError.readFailure }
-            offset += count
+        var signingInformation: CFDictionary?
+        let informationStatus = SecCodeCopySigningInformation(
+            code,
+            SecCSFlags(rawValue: kSecCSSigningInformation),
+            &signingInformation
+        )
+        guard informationStatus == errSecSuccess,
+              let dictionary = signingInformation as? [String: Any] else {
+            throw ClientTrustPolicyError.signingInformationUnavailable(informationStatus)
         }
 
-        var trailingByte: UInt8 = 0
-        let trailingCount = withUnsafeMutablePointer(to: &trailingByte) {
-            Darwin.read(descriptor, $0, 1)
+        guard let identifier = dictionary[kSecCodeInfoIdentifier as String] as? String,
+              identifier == expectedDaemonSigningIdentifier else {
+            throw ClientTrustPolicyError.invalidDaemonSigningIdentifier
         }
-        guard trailingCount == 0,
-              let requirement = String(bytes: bytes, encoding: .utf8) else {
-            throw ClientTrustPolicyError.unsafePolicyFile
+
+        guard let teamIdentifier = dictionary[kSecCodeInfoTeamIdentifier as String] as? String,
+              !teamIdentifier.isEmpty else {
+            throw ClientTrustPolicyError.missingTeamIdentifier
         }
-        try validateRequirement(requirement)
-        return requirement
+
+        return try makeCodeSigningRequirement(teamIdentifier: teamIdentifier)
     }
 }

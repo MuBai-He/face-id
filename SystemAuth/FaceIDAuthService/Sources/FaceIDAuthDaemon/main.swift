@@ -67,9 +67,12 @@ guard geteuid() == 0 else {
     exit(77)
 }
 
-let trustPolicy = try? ClientTrustPolicy()
-if trustPolicy == nil {
-    log("root-owned client trust policy is missing or invalid; all XPC clients will be rejected")
+let trustPolicy: ClientTrustPolicy
+do {
+    trustPolicy = try ClientTrustPolicy()
+} catch {
+    log("refusing to start without a valid signed daemon identity: \(error)")
+    exit(78)
 }
 
 let listener = FaceIDAuthXPCProtocol.serviceName.withCString {
@@ -84,11 +87,6 @@ xpc_connection_set_event_handler(listener) { event in
     switch xpc_get_type(event) {
     case XPC_TYPE_CONNECTION:
         let peer: xpc_connection_t = event
-        guard let trustPolicy else {
-            xpc_connection_cancel(peer)
-            return
-        }
-
         // This public XPC API makes the kernel enforce the exact code-signing
         // requirement on every message. No PID lookup or private audit-token API.
         let requirementStatus = trustPolicy.codeSigningRequirement.withCString {
