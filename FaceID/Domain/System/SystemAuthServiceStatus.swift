@@ -37,6 +37,9 @@ final class SystemAuthServiceStatus {
     var registrationDescription: String {
         switch registrationState {
         case .notRegistered:
+            if !isInStableApplicationLocation {
+                return "当前 App 位于临时构建目录。请先将签名后的 Face ID.app 移入 /Applications，再安装后台服务。"
+            }
             return "尚未安装系统服务。安装后需要在系统设置中允许后台服务运行。"
         case .enabled:
             return "系统服务已注册并获准运行。人脸认证仍未启用。"
@@ -66,7 +69,18 @@ final class SystemAuthServiceStatus {
     }
 
     var canRegister: Bool {
-        registrationState == .notRegistered
+        registrationState == .notRegistered && isInStableApplicationLocation
+    }
+
+    /// SMAppService retains the app bundle path for future daemon launches.
+    /// Never register a helper from Xcode's disposable DerivedData directory.
+    private var isInStableApplicationLocation: Bool {
+        let appPath = Bundle.main.bundleURL.resolvingSymlinksInPath().standardizedFileURL.path
+        let systemApplications = URL(fileURLWithPath: "/Applications", isDirectory: true).path + "/"
+        let userApplications = FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent("Applications", isDirectory: true)
+            .path + "/"
+        return appPath.hasPrefix(systemApplications) || appPath.hasPrefix(userApplications)
     }
 
     var canUnregister: Bool {
