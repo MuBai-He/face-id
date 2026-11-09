@@ -63,7 +63,7 @@ source group does not accidentally compile a PAM module into the GUI app.
 
 ## Local protocol, version 1
 
-The fixed path `/var/run/com.joeqiao.faceid.authd.sock` must be a UID-0-owned
+The fixed path `/var/run/com.mubai.faceid.authd.sock` must be a UID-0-owned
 socket with no group/other access (normally `0600`). Its parent must remain
 root-controlled. No socket path or identity comes from environment variables.
 
