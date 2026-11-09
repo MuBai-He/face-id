@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		17280C29A9398CBFDE0080BF /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 020486DA199A87C9F636359E /* Sparkle */; };
+		C2A3B4C5D6E7F8091A2B3C4D /* FaceIDAuthIPC in Frameworks */ = {isa = PBXBuildFile; productRef = C2A3B4C5D6E7F8091A2B3C4E /* FaceIDAuthIPC */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +59,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				17280C29A9398CBFDE0080BF /* Sparkle in Frameworks */,
+				C2A3B4C5D6E7F8091A2B3C4D /* FaceIDAuthIPC in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -110,6 +112,7 @@
 			name = "Face ID";
 			packageProductDependencies = (
 				020486DA199A87C9F636359E /* Sparkle */,
+				C2A3B4C5D6E7F8091A2B3C4E /* FaceIDAuthIPC */,
 			);
 			productName = "Face ID";
 			productReference = 601C493C300FFC8400D3DE9D /* Face ID.app */;
@@ -169,6 +172,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				61D2D277C8FB856EB092125F /* XCRemoteSwiftPackageReference "Sparkle" */,
+				C2A3B4C5D6E7F8091A2B3C4F /* XCLocalSwiftPackageReference "FaceIDAuthService" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 601C493D300FFC8400D3DE9D /* Products */;
@@ -482,6 +486,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		C2A3B4C5D6E7F8091A2B3C4F /* XCLocalSwiftPackageReference "FaceIDAuthService" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = SystemAuth/FaceIDAuthService;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		61D2D277C8FB856EB092125F /* XCRemoteSwiftPackageReference "Sparkle" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -498,6 +509,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 61D2D277C8FB856EB092125F /* XCRemoteSwiftPackageReference "Sparkle" */;
 			productName = Sparkle;
+		};
+		C2A3B4C5D6E7F8091A2B3C4E /* FaceIDAuthIPC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C2A3B4C5D6E7F8091A2B3C4F /* XCLocalSwiftPackageReference "FaceIDAuthService" */;
+			productName = FaceIDAuthIPC;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

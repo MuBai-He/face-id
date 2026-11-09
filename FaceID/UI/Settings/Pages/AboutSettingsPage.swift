@@ -79,6 +79,17 @@ struct AboutSettingsPage: View {
             SettingsGroupDivider()
 
             SettingsActionRowContent(
+                title: "系统认证服务",
+                subtitle: environment.systemAuthServiceStatus.statusDescription,
+                buttonTitle: environment.systemAuthServiceStatus.buttonTitle,
+                isEnabled: environment.systemAuthServiceStatus.canCheck
+            ) {
+                environment.systemAuthServiceStatus.check()
+            }
+
+            SettingsGroupDivider()
+
+            SettingsActionRowContent(
                 title: "GitHub 项目主页",
                 subtitle: "joe0515/face-id",
                 buttonTitle: "打开"

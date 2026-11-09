@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'SystemAuth/**'
+      - 'FaceID/**'
+      - 'Face ID.xcodeproj/**'
       - 'FaceID/Domain/Face/FaceRecognitionPipeline.swift'
       - '.github/workflows/pam-bootstrap.yml'
   workflow_dispatch:
@@ -42,6 +44,9 @@ jobs:
       - name: Build Face ID XPC client module
         if: runner.os == 'macOS'
         run: swift build --package-path SystemAuth/FaceIDAuthService --target FaceIDAuthIPC
+      - name: Build Face ID app with local authentication package
+        if: runner.os == 'macOS'
+        run: xcodebuild -project "Face ID.xcodeproj" -scheme "Face ID" -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build
       - name: Validate LaunchDaemon property list
         if: runner.os == 'macOS'
         run: plutil -lint SystemAuth/LaunchDaemon/com.joeqiao.faceid.authd.plist

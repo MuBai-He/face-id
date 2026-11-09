@@ -130,3 +130,16 @@ The IPC library now includes a one-shot status client:
 - Uses a bounded timeout and cancels the one-shot connection after the reply.
 
 This client intentionally cannot return an authorization success. It is not yet linked into the Face ID app's Xcode project, and it has not been integration-tested against an installed, correctly signed LaunchDaemon. The production installer must sign the daemon with the same Developer ID Team ID and provision the daemon's root-owned client requirement.
+
+
+## Phase 3 extension: Face ID app integration
+
+The Face ID Xcode project now references this package locally and links the
+FaceIDAuthIPC product into the app target. The About page exposes an explicit
+"系统认证服务" connectivity check backed by SystemAuthServiceStatus.
+
+This is diagnostic-only. The check asks the daemon for its status and can
+report that the daemon is reachable but authentication is not ready. It does
+not start camera capture, enroll a face, approve an authentication request, or
+change any PAM configuration. If the app is ad-hoc signed or has no Developer
+Team ID, the client refuses to connect.

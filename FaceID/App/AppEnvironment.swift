@@ -31,6 +31,9 @@ final class AppEnvironment {
     /// Held (not just constructed) so the challenge survives as long as the app does.
     let appUnlockCoordinator: AppUnlockCoordinator
 
+    /// Read-only connectivity diagnostics for the optional privileged system-auth service.
+    let systemAuthServiceStatus = SystemAuthServiceStatus()
+
     /// Revealed by tapping the app icon 5 times on the About page. Plain in-memory `var` so it resets on every relaunch.
     var isDebugSectionRevealed = false
 
