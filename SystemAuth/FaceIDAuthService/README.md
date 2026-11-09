@@ -100,22 +100,22 @@ FaceIDAuthIPC policy module, and a LaunchDaemon packaging template.
   xpc_connection_set_peer_code_signing_requirement API. The kernel checks the
   peer's code signature for every message; the implementation does not use a
   PID-only lookup, private auditToken properties, or private XPC audit-token APIs.
-- The signing requirement is loaded only from a root-owned, mode-0700 directory
-  and a root-owned, mode-0600 regular file. The requirement pins the app bundle
-  identifier and the 10-character Developer ID Team ID.
-- If the trust policy is absent or malformed, every incoming connection is
-  rejected. There is no development-mode bypass.
+- The signing requirement is derived from the daemon's own verified code
+  signature. It pins the GUI app bundle identifier and the daemon's 10-character
+  Apple Developer Team ID; no mutable trust-policy file is read.
+- If the daemon is unsigned, ad-hoc signed, or has an unexpected signing
+  identifier, it refuses to start. There is no development-mode bypass.
 - The only XPC operation is a status probe. It always replies unavailable.
   There is no method that can approve PAM, enroll a user, or accept a client-
   supplied embedding or liveness result.
 - The daemon checks that a peer is non-root and has a nonzero audit-session ID
   before replying. Full console-session/PAM-session binding is still outstanding.
 
-The LaunchDaemon plist is a packaging template, not an install instruction.
-The installer must derive the actual Team ID from the signed application,
-write the trust requirement as root, sign and install the daemon, and support
-rollback/uninstall. No PAM stack, AuthorizationDB, SIP, or FileVault setting
-is changed by this phase.
+The LaunchDaemon plist is now embedded in the app bundle for SMAppService.
+The daemon binary is built as a separate Xcode tool target and copied into
+Contents/Library/PrivilegedHelperTools. Registration and unregistration are
+handled by SMAppService with explicit user approval. No PAM stack,
+AuthorizationDB, SIP, or FileVault setting is changed by this phase.
 
 
 ## Phase 3 extension: app-side XPC client
