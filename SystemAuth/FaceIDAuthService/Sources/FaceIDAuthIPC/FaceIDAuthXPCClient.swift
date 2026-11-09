@@ -177,22 +177,33 @@ public enum FaceIDAuthXPCClient {
     }
 
     private static func currentTeamIdentifier() throws -> String {
-        guard let executableURL = Bundle.main.executableURL else {
-            throw FaceIDAuthXPCClientError.missingTeamIdentifier
+        var runningCode: SecCode?
+        let runningCodeStatus = SecCodeCopySelf(SecCSFlags(rawValue: 0), &runningCode)
+        guard runningCodeStatus == errSecSuccess, let runningCode else {
+            throw FaceIDAuthXPCClientError.signingInformationUnavailable(runningCodeStatus)
         }
 
         var staticCode: SecStaticCode?
-        let codeStatus = SecStaticCodeCreateWithPath(
-            executableURL as CFURL,
-            SecCSFlags(rawValue: kSecCSDefaultFlags),
+        let staticCodeStatus = SecCodeCopyStaticCode(
+            runningCode,
+            SecCSFlags(rawValue: 0),
             &staticCode
         )
-        guard codeStatus == errSecSuccess, let staticCode else {
-            throw FaceIDAuthXPCClientError.signingInformationUnavailable(codeStatus)
+        guard staticCodeStatus == errSecSuccess, let staticCode else {
+            throw FaceIDAuthXPCClientError.signingInformationUnavailable(staticCodeStatus)
+        }
+
+        let validityStatus = SecStaticCodeCheckValidity(
+            staticCode,
+            SecCSFlags(rawValue: 0),
+            nil
+        )
+        guard validityStatus == errSecSuccess else {
+            throw FaceIDAuthXPCClientError.signingInformationUnavailable(validityStatus)
         }
 
         var signingInformation: CFDictionary?
-        let informationStatus = SecStaticCodeCopySigningInformation(
+        let informationStatus = SecCodeCopySigningInformation(
             staticCode,
             SecCSFlags(rawValue: kSecCSSigningInformation),
             &signingInformation
