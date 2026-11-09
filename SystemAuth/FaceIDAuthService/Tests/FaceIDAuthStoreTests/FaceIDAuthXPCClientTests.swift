@@ -54,6 +54,15 @@ final class FaceIDAuthXPCClientTests: XCTestCase {
         }
     }
 
+    func testRejectsNonDictionaryBeforeCheckingPeerUID() {
+        let nonDictionary = xpc_string_create("transport error")
+        XCTAssertThrowsError(
+            try FaceIDAuthXPCClient.decodeStatusReply(nonDictionary, peerEUID: 501)
+        ) { error in
+            XCTAssertEqual(error as? FaceIDAuthXPCClientError, .connectionFailed)
+        }
+    }
+
     func testRejectsUnsupportedProtocolVersion() {
         XCTAssertThrowsError(
             try FaceIDAuthXPCClient.decodeStatusReply(reply(version: 2), peerEUID: 0)
