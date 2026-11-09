@@ -135,10 +135,10 @@ struct AboutSettingsPage: View {
 
             SettingsActionRowContent(
                 title: "GitHub 项目主页",
-                subtitle: "joe0515/face-id",
+                subtitle: "MuBai-He/face-id",
                 buttonTitle: "打开"
             ) {
-                if let url = URL(string: "https://github.com/joe0515/face-id") {
+                if let url = URL(string: "https://github.com/MuBai-He/face-id") {
                     NSWorkspace.shared.open(url)
                 }
             }
@@ -150,7 +150,7 @@ struct AboutSettingsPage: View {
                 subtitle: "在 GitHub 上提交问题",
                 buttonTitle: "发送"
             ) {
-                if let url = URL(string: "https://github.com/joe0515/face-id/issues") {
+                if let url = URL(string: "https://github.com/MuBai-He/face-id/issues") {
                     NSWorkspace.shared.open(url)
                 }
             }
