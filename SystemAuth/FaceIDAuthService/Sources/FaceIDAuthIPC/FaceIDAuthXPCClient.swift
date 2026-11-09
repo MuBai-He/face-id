@@ -23,6 +23,22 @@ public struct FaceIDAuthXPCStatusResponse: Equatable, Sendable {
     public let reason: String
 }
 
+private final class XPCConnectionBox: @unchecked Sendable {
+    let raw: xpc_connection_t
+
+    init(_ raw: xpc_connection_t) {
+        self.raw = raw
+    }
+
+    func cancel() {
+        xpc_connection_cancel(raw)
+    }
+
+    func peerEUID() -> uid_t {
+        xpc_connection_get_euid(raw)
+    }
+}
+
 private final class XPCCompletionGate: @unchecked Sendable {
     private let lock = NSLock()
     private var completed = false
@@ -62,12 +78,13 @@ public enum FaceIDAuthXPCClient {
             xpc_connection_create_mach_service($0, nil, 0)
         }
 
+        let connectionBox = XPCConnectionBox(connection)
         xpc_connection_set_event_handler(connection) { _ in }
         let requirementStatus = requirement.withCString {
             xpc_connection_set_peer_code_signing_requirement(connection, $0)
         }
         guard requirementStatus == 0 else {
-            xpc_connection_cancel(connection)
+            connectionBox.cancel()
             throw FaceIDAuthXPCClientError.connectionSetupFailed(requirementStatus)
         }
 
@@ -87,7 +104,7 @@ public enum FaceIDAuthXPCClient {
         let replyQueue = DispatchQueue(label: "com.joeqiao.faceid.xpc-client.reply")
         let timeoutWork = DispatchWorkItem {
             guard gate.claim() else { return }
-            xpc_connection_cancel(connection)
+            connectionBox.cancel()
             completion(.failure(.timedOut))
         }
         DispatchQueue.global(qos: .utility).asyncAfter(
@@ -97,13 +114,12 @@ public enum FaceIDAuthXPCClient {
 
         xpc_connection_send_message_with_reply(connection, request, replyQueue) { reply in
             guard gate.claim() else { return }
-            timeoutWork.cancel()
-            defer { xpc_connection_cancel(connection) }
+            defer { connectionBox.cancel() }
 
             do {
                 let response = try decodeStatusReply(
                     reply,
-                    peerEUID: xpc_connection_get_euid(connection)
+                    peerEUID: connectionBox.peerEUID()
                 )
                 completion(.success(response))
             } catch let error as FaceIDAuthXPCClientError {
@@ -161,15 +177,23 @@ public enum FaceIDAuthXPCClient {
     }
 
     private static func currentTeamIdentifier() throws -> String {
-        var code: SecCode?
-        let codeStatus = SecCodeCopySelf(SecCSFlags(rawValue: 0), &code)
-        guard codeStatus == errSecSuccess, let code else {
+        guard let executableURL = Bundle.main.executableURL else {
+            throw FaceIDAuthXPCClientError.missingTeamIdentifier
+        }
+
+        var staticCode: SecStaticCode?
+        let codeStatus = SecStaticCodeCreateWithPath(
+            executableURL as CFURL,
+            SecCSFlags(rawValue: kSecCSDefaultFlags),
+            &staticCode
+        )
+        guard codeStatus == errSecSuccess, let staticCode else {
             throw FaceIDAuthXPCClientError.signingInformationUnavailable(codeStatus)
         }
 
         var signingInformation: CFDictionary?
-        let informationStatus = SecCodeCopySigningInformation(
-            code,
+        let informationStatus = SecStaticCodeCopySigningInformation(
+            staticCode,
             SecCSFlags(rawValue: kSecCSSigningInformation),
             &signingInformation
         )
