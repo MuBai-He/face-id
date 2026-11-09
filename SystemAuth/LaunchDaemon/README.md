@@ -1,31 +1,37 @@
-# LaunchDaemon packaging scaffold
+# Face ID LaunchDaemon packaging
 
-The plist in this directory is a packaging template only. It is not installed,
-bootstrapped, or loaded by the test suite.
+The Face ID app embeds this property list at:
 
-Expected installed layout:
+- `Contents/Library/LaunchDaemons/com.mubai.faceid.authd.plist`
 
-- Executable: /Library/PrivilegedHelperTools/com.joeqiao.faceid.authd
-- LaunchDaemon: /Library/LaunchDaemons/com.joeqiao.faceid.authd.plist
-- Trust policy: /Library/Application Support/com.joeqiao.faceid/client-requirement.txt
+The signed helper is embedded at:
 
-The installer must create the application-support directory as root:wheel
-mode 0700, verify the signed Face ID application, derive its 10-character
-Developer ID Team ID, and write the exact requirement below as root:wheel
-mode 0600:
+- `Contents/Library/PrivilegedHelperTools/faceid-authd`
 
-    anchor apple generic and identifier "com.joeqiao.faceid" and certificate leaf[subject.OU] = "TEAMID"
+The app registers and unregisters the daemon through Apple's
+`SMAppService.daemon(plistName:)` API. Do not copy this plist manually into
+`/Library/LaunchDaemons` and do not bootstrap it with launchctl by hand.
 
-Replace TEAMID only after verifying the actual signed app. Do not use an
-ad-hoc signature, a PID-only check, or a client-supplied requirement. The daemon
-uses Apple's public xpc_connection_set_peer_code_signing_requirement API,
-which enforces the requirement on every message.
+## Code-signing identity
 
-The daemon is intentionally non-authorizing: its only supported operation is
-a status probe and it always returns unavailable. It does not accept biometric
-vectors, liveness flags, enrollment data, or approval decisions. The existing
-PAM module is not connected to this XPC service.
+- GUI app identifier: `com.mubai.faceid`
+- Daemon identifier: `com.mubai.faceid.authd`
+- Mach service: `com.mubai.faceid.authd`
 
-Do not manually install this plist yet. A later installer must include
-signature pinning, code-signing of the helper, ownership/mode verification,
-rollback, and uninstall support.
+The app and daemon must be signed by the same Apple Developer Team. The daemon
+validates its own code signature and derives the Team ID used to pin the GUI
+client. The app independently pins the daemon's identifier and Team ID.
+
+The current daemon implements only a status endpoint and always returns
+`unavailable`. It is not connected to camera capture, enrollment, template
+matching, or PAM approval. Do not enable the example PAM rule.
+
+## Installation safety
+
+Registration is opt-in from the app's About page. Install the signed app in
+`/Applications` or `~/Applications` before registering it; the app blocks
+registration from transient Xcode DerivedData paths. macOS may require the user
+to approve the background service in System Settings > General > Login Items.
+
+Unregister through the app's Service Management action. No PAM configuration,
+AuthorizationDB, SIP, or FileVault settings are changed.
