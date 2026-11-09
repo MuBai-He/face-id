@@ -25,7 +25,7 @@ final class SystemAuthServiceStatus {
         case failed(message: String)
     }
 
-    private let service = SMAppService.daemon(plistName: "com.joeqiao.faceid.authd.plist")
+    private let service = SMAppService.daemon(plistName: "com.mubai.faceid.authd.plist")
 
     private(set) var connectionState: ConnectionState = .notChecked
     private(set) var registrationState: RegistrationState = .notFound
