@@ -101,7 +101,7 @@ public enum FaceIDAuthXPCClient {
         }
 
         let gate = XPCCompletionGate()
-        let replyQueue = DispatchQueue(label: "com.joeqiao.faceid.xpc-client.reply")
+        let replyQueue = DispatchQueue(label: "com.mubai.faceid.xpc-client.reply")
         let timeoutWork = DispatchWorkItem {
             guard gate.claim() else { return }
             connectionBox.cancel()
