@@ -59,3 +59,19 @@ touch the production path, install a LaunchDaemon, or modify PAM.
 
 Until those pieces are implemented and reviewed, the PAM diagnostic responder
 continues to return `UNAVAILABLE`; do not install the example PAM rule.
+
+
+## Recognition and liveness extension
+
+The `FaceIDAuthRecognition` target now contains:
+
+- `ArcFaceModelRunner`: loads the checked-in Core ML model from an explicit path, verifies the 112x112 image input and 512-value output, rejects unsafe model bundle paths, and returns finite L2-normalized vectors.
+- `FaceIDRecognitionEngine`: runs Vision detection and the app's canonical 5-point/2-point alignment. System-auth recognition rejects zero/multiple faces, small faces, low or unavailable capture quality, and the padded-crop alignment fallback. It has no Vision Feature Print fallback.
+- The app's landmark geometry and current passive liveness cues: specular glare, device-bezel detection, planar-vs-3D geometry, yaw/nose-depth consistency, and blink dynamics.
+- `FaceIDLivenessEngine`: uses the heavy-mode evaluator, keeps deny cues active, requires at least 8 frames, rejects non-monotonic timestamps and gaps over one second, and returns denial if a scan is finished without a positive cue.
+
+The macOS CI loads the real checked-in `ArcFace.mlmodelc` and runs inference on a synthetic aligned image. Tests also verify that a blank frame cannot produce a recognition embedding, that heavy mode does not auto-confirm without a positive cue, and that a deny cue overrides an earlier confirmation.
+
+**Security limitation:** this is still passive RGB-camera liveness, not a random action challenge. It has not been calibrated against real users, replay videos, high-quality displays, or generated video. A blink or head-turn in a replay may satisfy some passive cues. It must not be treated as equivalent to Touch ID or used to approve PAM yet.
+
+The recognition sources are currently mirrored from the app into the new package so the service can be developed independently. A later refactor should move the shared implementation into a single reusable target to prevent drift.
