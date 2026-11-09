@@ -116,3 +116,17 @@ The installer must derive the actual Team ID from the signed application,
 write the trust requirement as root, sign and install the daemon, and support
 rollback/uninstall. No PAM stack, AuthorizationDB, SIP, or FileVault setting
 is changed by this phase.
+
+
+## Phase 3 extension: app-side XPC client
+
+The IPC library now includes a one-shot status client:
+
+- Reads the Team ID from the current process's code signature using Security.framework.
+- Builds a daemon requirement pinning both com.joeqiao.faceid.authd and the same Team ID.
+- Applies the peer code-signing requirement before activating the XPC connection.
+- Sends only protocol version 1 and the status operation.
+- Verifies that the reply peer has EUID 0, checks protocol version and known response reasons, and rejects any status other than unavailable.
+- Uses a bounded timeout and cancels the one-shot connection after the reply.
+
+This client intentionally cannot return an authorization success. It is not yet linked into the Face ID app's Xcode project, and it has not been integration-tested against an installed, correctly signed LaunchDaemon. The production installer must sign the daemon with the same Developer ID Team ID and provision the daemon's root-owned client requirement.

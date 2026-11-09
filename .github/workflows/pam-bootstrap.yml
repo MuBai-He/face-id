@@ -39,6 +39,9 @@ jobs:
       - name: Build privileged XPC daemon
         if: runner.os == 'macOS'
         run: swift build --package-path SystemAuth/FaceIDAuthService --product faceid-authd
+      - name: Build Face ID XPC client module
+        if: runner.os == 'macOS'
+        run: swift build --package-path SystemAuth/FaceIDAuthService --target FaceIDAuthIPC
       - name: Validate LaunchDaemon property list
         if: runner.os == 'macOS'
         run: plutil -lint SystemAuth/LaunchDaemon/com.joeqiao.faceid.authd.plist

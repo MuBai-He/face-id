@@ -17,3 +17,17 @@ public enum FaceIDAuthXPCProtocol {
     public static let unsupportedVersionReason = "unsupported_protocol_version"
     public static let unsupportedOperationReason = "unsupported_operation"
 }
+
+
+extension FaceIDAuthXPCProtocol {
+    public static let daemonSigningIdentifier = "com.joeqiao.faceid.authd"
+
+    /// Builds the exact daemon requirement from the signed app's own Team ID.
+    /// The client must never accept a daemon Team ID supplied by the daemon.
+    public static func makeDaemonCodeSigningRequirement(teamIdentifier: String) throws -> String {
+        guard ClientTrustPolicy.isValidTeamIdentifier(teamIdentifier) else {
+            throw ClientTrustPolicyError.invalidTeamIdentifier
+        }
+        return "anchor apple generic and identifier \"\(daemonSigningIdentifier)\" and certificate leaf[subject.OU] = \"\(teamIdentifier)\""
+    }
+}
