@@ -50,6 +50,11 @@ jobs:
       - name: Validate embedded LaunchDaemon plist
         if: runner.os == 'macOS'
         run: plutil -lint SystemAuth/LaunchDaemon/com.joeqiao.faceid.authd.plist
+      - name: Verify SMAppService bundle layout
+        if: runner.os == 'macOS'
+        run: |
+          grep -q '<key>BundleProgram</key>' SystemAuth/LaunchDaemon/com.joeqiao.faceid.authd.plist
+          grep -q 'Contents/Library/PrivilegedHelperTools/faceid-authd' SystemAuth/LaunchDaemon/com.joeqiao.faceid.authd.plist
       - name: Validate LaunchDaemon property list
         if: runner.os == 'macOS'
         run: plutil -lint SystemAuth/LaunchDaemon/com.joeqiao.faceid.authd.plist
