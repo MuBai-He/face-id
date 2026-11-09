@@ -223,7 +223,7 @@ public final class ProtectedTemplateStore {
             }
             for sample in identity.samples {
                 guard sample.embedding.count == expectedDimension,
-                      sample.embedding.allSatisfy(\\.isFinite) else {
+                      sample.embedding.allSatisfy(\.isFinite) else {
                     throw ProtectedTemplateStoreError.invalidTemplate("invalid embedding")
                 }
                 let norm = sample.embedding.reduce(Float.zero) { $0 + $1 * $1 }
