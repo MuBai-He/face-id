@@ -302,8 +302,9 @@ public final class ProtectedTemplateStore {
         var bytes = [UInt8](repeating: 0, count: keyLength)
         var offset = 0
         while offset < bytes.count {
+            let remaining = bytes.count - offset
             let count = bytes.withUnsafeMutableBytes { raw in
-                read(fd, raw.baseAddress!.advanced(by: offset), bytes.count - offset)
+                read(fd, raw.baseAddress!.advanced(by: offset), remaining)
             }
             if count < 0 && errno == EINTR { continue }
             if count <= 0 { throw ProtectedTemplateStoreError.storageFailure }
