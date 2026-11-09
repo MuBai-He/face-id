@@ -1,7 +1,7 @@
 import Foundation
 
 public enum FaceIDAuthXPCProtocol {
-    public static let serviceName = "com.joeqiao.faceid.authd"
+    public static let serviceName = "com.mubai.faceid.authd"
     public static let version: Int64 = 1
 
     public static let operationKey = "operation"
@@ -20,7 +20,7 @@ public enum FaceIDAuthXPCProtocol {
 
 
 extension FaceIDAuthXPCProtocol {
-    public static let daemonSigningIdentifier = "com.joeqiao.faceid.authd"
+    public static let daemonSigningIdentifier = "com.mubai.faceid.authd"
 
     /// Builds the exact daemon requirement from the signed app's own Team ID.
     /// The client must never accept a daemon Team ID supplied by the daemon.
