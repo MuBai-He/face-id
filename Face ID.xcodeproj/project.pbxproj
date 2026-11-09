@@ -10,7 +10,7 @@
 		B10000000000000000000009 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* main.swift */; };
 		B1000000000000000000000A /* FaceIDAuthIPC in Daemon Frameworks */ = {isa = PBXBuildFile; productRef = C2A3B4C5D6E7F8091A2B3C4E /* FaceIDAuthIPC */; };
 		B1000000000000000000000B /* faceid-authd in Embed Daemon */ = {isa = PBXBuildFile; fileRef = B10000000000000000000004 /* faceid-authd */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		B1000000000000000000000C /* LaunchDaemon plist in Embed Plist */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* com.joeqiao.faceid.authd.plist */; };
+		B1000000000000000000000C /* LaunchDaemon plist in Embed Plist */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* com.mubai.faceid.authd.plist */; };
 
 		17280C29A9398CBFDE0080BF /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 020486DA199A87C9F636359E /* Sparkle */; };
 		C2A3B4C5D6E7F8091A2B3C4D /* FaceIDAuthIPC in Frameworks */ = {isa = PBXBuildFile; productRef = C2A3B4C5D6E7F8091A2B3C4E /* FaceIDAuthIPC */; };
@@ -28,7 +28,7 @@
 
 /* Begin PBXFileReference section */
 		B10000000000000000000002 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceIDAuthService/Sources/FaceIDAuthDaemon/main.swift; sourceTree = "<group>"; };
-		B10000000000000000000003 /* com.joeqiao.faceid.authd.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = LaunchDaemon/com.joeqiao.faceid.authd.plist; sourceTree = "<group>"; };
+		B10000000000000000000003 /* com.mubai.faceid.authd.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = LaunchDaemon/com.mubai.faceid.authd.plist; sourceTree = "<group>"; };
 		B10000000000000000000004 /* faceid-authd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = faceid-authd; sourceTree = BUILT_PRODUCTS_DIR; };
 
 		601C493C300FFC8400D3DE9D /* Face ID.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Face ID.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -111,7 +111,7 @@
 			isa = PBXGroup;
 			children = (
 				B10000000000000000000002 /* main.swift */,
-				B10000000000000000000003 /* com.joeqiao.faceid.authd.plist */,
+				B10000000000000000000003 /* com.mubai.faceid.authd.plist */,
 			);
 			path = SystemAuth;
 			sourceTree = "<group>";
@@ -479,7 +479,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.3;
-				PRODUCT_BUNDLE_IDENTIFIER = com.joeqiao.faceid;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mubai.faceid;
 				PRODUCT_MODULE_NAME = FaceID;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -515,7 +515,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.3;
-				PRODUCT_BUNDLE_IDENTIFIER = com.joeqiao.faceid;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mubai.faceid;
 				PRODUCT_MODULE_NAME = FaceID;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -537,7 +537,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.3;
-				PRODUCT_BUNDLE_IDENTIFIER = com.joeqiao.faceid.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mubai.faceid.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
@@ -555,7 +555,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.3;
-				PRODUCT_BUNDLE_IDENTIFIER = com.joeqiao.faceid.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mubai.faceid.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
@@ -574,7 +574,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.joeqiao.faceid.authd;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mubai.faceid.authd;
 				PRODUCT_NAME = faceid-authd;
 				SKIP_INSTALL = YES;
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -589,7 +589,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.joeqiao.faceid.authd;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mubai.faceid.authd;
 				PRODUCT_NAME = faceid-authd;
 				SKIP_INSTALL = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
