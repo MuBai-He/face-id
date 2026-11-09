@@ -55,7 +55,7 @@ enum KeychainError: LocalizedError {
 }
 
 enum KeychainManager {
-    nonisolated static let service = "com.joeqiao.faceid"
+    nonisolated static let service = FIDConstants.keychainService
 
     /// Attributes-only existence check — never prompts, even for access-controlled items.
     nonisolated static func exists(account: String) -> Bool {
