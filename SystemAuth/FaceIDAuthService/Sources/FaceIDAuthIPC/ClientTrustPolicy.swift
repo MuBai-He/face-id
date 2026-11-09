@@ -18,7 +18,7 @@ public enum ClientTrustPolicyError: Error, Equatable {
 /// path. An ad-hoc or unsigned daemon has no Team ID and refuses to start.
 public struct ClientTrustPolicy: Sendable {
     public static let expectedSigningIdentifier = "com.mubai.faceid"
-    public static let expectedDaemonSigningIdentifier = "com.mubai.faceid.authd"
+    public static let expectedDaemonSigningIdentifier = "faceid-authd"
 
     public let codeSigningRequirement: String
 
