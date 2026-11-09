@@ -113,7 +113,7 @@ public final class ProtectedTemplateStore {
               (info.st_mode & 0o077) == 0,
               info.st_nlink == 1,
               info.st_size > 0,
-              info.st_size <= Self.maximumStoreBytes else {
+              info.st_size <= Int64(Self.maximumStoreBytes) else {
             throw ProtectedTemplateStoreError.corruptedStore
         }
 
@@ -294,7 +294,7 @@ public final class ProtectedTemplateStore {
               info.st_uid == ownerUID,
               (info.st_mode & 0o077) == 0,
               info.st_nlink == 1,
-              info.st_size == keyLength else {
+              info.st_size == Int64(keyLength) else {
             throw ProtectedTemplateStoreError.unsafeKeyFile
         }
         var bytes = [UInt8](repeating: 0, count: keyLength)
