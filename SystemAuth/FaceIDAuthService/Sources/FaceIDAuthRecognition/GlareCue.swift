@@ -9,7 +9,7 @@
 
 import CoreGraphics
 
-struct GlareSample: Equatable {
+struct GlareSample: Equatable, Sendable {
     /// Native pixel width of the measured crop; `renderCrop` only ever downsamples, so this
     /// is an honest detail measure — the cue confidence-weights down as it shrinks.
     let cropPixelWidth: CGFloat
