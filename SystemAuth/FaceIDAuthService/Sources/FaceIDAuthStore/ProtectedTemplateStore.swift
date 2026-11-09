@@ -63,7 +63,7 @@ private struct TemplateDocument: Codable {
 
 public final class ProtectedTemplateStore {
     public static let productionDirectory = URL(
-        fileURLWithPath: "/Library/Application Support/com.joeqiao.faceid",
+        fileURLWithPath: "/Library/Application Support/com.mubai.faceid",
         isDirectory: true
     )
 
