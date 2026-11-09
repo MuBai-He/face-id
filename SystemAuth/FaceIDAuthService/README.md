@@ -75,3 +75,16 @@ The macOS CI loads the real checked-in `ArcFace.mlmodelc` and runs inference on 
 **Security limitation:** this is still passive RGB-camera liveness, not a random action challenge. It has not been calibrated against real users, replay videos, high-quality displays, or generated video. A blink or head-turn in a replay may satisfy some passive cues. It must not be treated as equivalent to Touch ID or used to approve PAM yet.
 
 The recognition sources are currently mirrored from the app into the new package so the service can be developed independently. A later refactor should move the shared implementation into a single reusable target to prevent drift.
+
+
+## UID-scoped template matching
+
+The recognition target also exposes `FaceIDTemplateMatcher`:
+
+- Requires the requested UID explicitly and never matches another account's template.
+- Ignores disabled identities and non-ArcFace model identifiers.
+- Requires at least three valid 512-dimensional normalized samples.
+- Uses the mean of the three best sample similarities plus a lower centroid sanity gate; one unusually good frame cannot carry an otherwise poor match.
+- Requires the caller to pass an explicit similarity threshold (minimum 0.30). There is no silent default inherited from the app's UI settings.
+
+The threshold is only a parameterized policy hook. It is not calibrated for system authentication and must not be enabled in PAM until evaluated on representative genuine/impostor data.
