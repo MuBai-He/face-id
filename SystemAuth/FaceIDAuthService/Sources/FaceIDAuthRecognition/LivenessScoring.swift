@@ -13,7 +13,7 @@ import CoreGraphics
 /// One frame's worth of liveness-relevant measurements — already normalized, no Vision needed.
 /// Populated by `LivenessFeatureExtractor.extract(from:)` from a real camera frame, or built
 /// directly from synthetic data by `tools/liveness_selftest.swift`.
-struct LivenessFrame {
+struct LivenessFrame: Sendable {
     let timestamp: Date
     /// Every landmark point Vision found this frame, tagged by region — see `LandmarkGeometry.allPoints`.
     let landmarks: [LandmarkPoint]
