@@ -9,7 +9,7 @@ final class ClientTrustPolicyTests: XCTestCase {
         )
         XCTAssertEqual(
             policy.codeSigningRequirement,
-            "anchor apple generic and identifier \"com.joeqiao.faceid\" and certificate leaf[subject.OU] = \"ABCDE12345\""
+            "anchor apple generic and identifier \"com.mubai.faceid\" and certificate leaf[subject.OU] = \"ABCDE12345\""
         )
     }
 
@@ -48,7 +48,7 @@ final class ClientTrustPolicyTests: XCTestCase {
         let requirement = try ClientTrustPolicy.makeCodeSigningRequirement(
             teamIdentifier: "ABCDE12345"
         )
-        XCTAssertTrue(requirement.contains("identifier \"com.joeqiao.faceid\""))
+        XCTAssertTrue(requirement.contains("identifier \"com.mubai.faceid\""))
         XCTAssertTrue(requirement.contains("certificate leaf[subject.OU] = \"ABCDE12345\""))
     }
 }
