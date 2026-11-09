@@ -11,7 +11,7 @@ import CoreGraphics
 
 /// Every landmark region this app reads from `VNFaceLandmarks2D`. Includes several regions
 /// `FaceAligner` never needed — liveness samples more of them for its residual-coherence check.
-enum LandmarkRegion: String, CaseIterable, Hashable {
+enum LandmarkRegion: String, CaseIterable, Hashable, Sendable {
     case leftEye, rightEye
     case leftEyebrow, rightEyebrow
     case nose, noseCrest
@@ -21,7 +21,7 @@ enum LandmarkRegion: String, CaseIterable, Hashable {
 
 /// One landmark point, tagged with where it came from. `indexInRegion` lets two frames'
 /// points be paired up for cross-frame comparison.
-struct LandmarkPoint {
+struct LandmarkPoint: Sendable {
     let point: CGPoint
     let region: LandmarkRegion
     let indexInRegion: Int
