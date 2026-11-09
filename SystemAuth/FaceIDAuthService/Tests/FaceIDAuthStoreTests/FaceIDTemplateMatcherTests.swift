@@ -36,10 +36,13 @@ final class FaceIDTemplateMatcherTests: XCTestCase {
             identities: [expected],
             threshold: 0.50
         )
-        XCTAssertEqual(match?.identityID, expected.id)
-        XCTAssertEqual(match?.uid, 501)
-        XCTAssertEqual(match?.topKSampleSimilarity, 1, accuracy: 0.0001)
-        XCTAssertEqual(match?.centroidSimilarity, 1, accuracy: 0.0001)
+        guard let match else {
+            return XCTFail("Expected an identity match")
+        }
+        XCTAssertEqual(match.identityID, expected.id)
+        XCTAssertEqual(match.uid, 501)
+        XCTAssertEqual(match.topKSampleSimilarity, 1, accuracy: 0.0001)
+        XCTAssertEqual(match.centroidSimilarity, 1, accuracy: 0.0001)
     }
 
     func testCannotUseAnotherUsersTemplate() throws {
