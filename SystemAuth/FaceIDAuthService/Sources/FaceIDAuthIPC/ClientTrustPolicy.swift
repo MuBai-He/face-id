@@ -60,8 +60,18 @@ public struct ClientTrustPolicy: Sendable {
             throw ClientTrustPolicyError.signingInformationUnavailable(codeStatus)
         }
 
-        let validityStatus = SecCodeCheckValidity(
+        var staticCode: SecStaticCode?
+        let staticCodeStatus = SecCodeCopyStaticCode(
             code,
+            SecCSFlags(rawValue: 0),
+            &staticCode
+        )
+        guard staticCodeStatus == errSecSuccess, let staticCode else {
+            throw ClientTrustPolicyError.signingInformationUnavailable(staticCodeStatus)
+        }
+
+        let validityStatus = SecStaticCodeCheckValidity(
+            staticCode,
             SecCSFlags(rawValue: 0),
             nil
         )
@@ -70,8 +80,8 @@ public struct ClientTrustPolicy: Sendable {
         }
 
         var signingInformation: CFDictionary?
-        let informationStatus = SecCodeCopySigningInformation(
-            code,
+        let informationStatus = SecStaticCodeCopySigningInformation(
+            staticCode,
             SecCSFlags(rawValue: kSecCSSigningInformation),
             &signingInformation
         )
