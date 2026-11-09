@@ -23,7 +23,7 @@ final class FaceIDAuthXPCClientTests: XCTestCase {
     func testDaemonRequirementPinsIdentifierAndTeam() throws {
         XCTAssertEqual(
             try FaceIDAuthXPCProtocol.makeDaemonCodeSigningRequirement(teamIdentifier: "ABCDE12345"),
-            "anchor apple generic and identifier \"com.mubai.faceid.authd\" and certificate leaf[subject.OU] = \"ABCDE12345\""
+            "anchor apple generic and identifier \"faceid-authd\" and certificate leaf[subject.OU] = \"ABCDE12345\""
         )
     }
 
