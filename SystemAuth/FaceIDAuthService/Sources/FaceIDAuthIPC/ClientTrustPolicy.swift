@@ -81,7 +81,7 @@ public struct ClientTrustPolicy: Sendable {
 
         var signingInformation: CFDictionary?
         let informationStatus = SecCodeCopySigningInformation(
-            code,
+            staticCode,
             SecCSFlags(rawValue: kSecCSSigningInformation),
             &signingInformation
         )
