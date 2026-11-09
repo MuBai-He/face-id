@@ -33,5 +33,8 @@ jobs:
         run: |
           make -C SystemAuth/PAM
           make -C SystemAuth/Daemon
+      - name: Protected template store tests
+        if: runner.os == 'macOS'
+        run: swift test --package-path SystemAuth/FaceIDAuthService
       - name: Isolated control-flow and protocol tests
         run: sudo "$(command -v python3)" SystemAuth/tests/test_pam_transport.py
