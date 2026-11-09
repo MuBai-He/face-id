@@ -81,11 +81,13 @@ public final class ProtectedTemplateStore {
     private let key: SymmetricKey
     private let lock = NSLock()
 
-    /// Production must use owner UID 0. The owner override exists for isolated tests.
-    public init(
-        directoryURL: URL = ProtectedTemplateStore.productionDirectory,
-        expectedOwnerUID: uid_t = 0
-    ) throws {
+    public convenience init() throws {
+        try self.init(directoryURL: Self.productionDirectory, expectedOwnerUID: 0)
+    }
+
+    /// Internal injection point for tests. The production initializer always
+    /// pins the directory owner to root and requires an effective UID of 0.
+    init(directoryURL: URL, expectedOwnerUID: uid_t) throws {
         self.directoryURL = directoryURL
         self.expectedOwnerUID = expectedOwnerUID
         if expectedOwnerUID == 0 && geteuid() != 0 {
