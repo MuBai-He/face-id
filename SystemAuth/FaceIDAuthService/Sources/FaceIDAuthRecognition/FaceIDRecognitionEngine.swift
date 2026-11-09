@@ -22,6 +22,7 @@ public struct FaceIDRecognitionResult: Sendable {
     public let embedding: [Float]
     public let captureQuality: Float
     public let alignment: FaceIDAlignmentQuality
+    let livenessFrame: LivenessFrame
 }
 
 public final class FaceIDRecognitionEngine: @unchecked Sendable {
@@ -83,10 +84,16 @@ public final class FaceIDRecognitionEngine: @unchecked Sendable {
         }
 
         let embedding = try model.embedding(for: aligned.image)
+        let livenessFrame = FaceIDLivenessFeatureExtractor.extract(
+            face: face,
+            frame: frame,
+            alignment: alignment
+        )
         return FaceIDRecognitionResult(
             embedding: embedding,
             captureQuality: quality,
-            alignment: alignment
+            alignment: alignment,
+            livenessFrame: livenessFrame
         )
     }
 }
