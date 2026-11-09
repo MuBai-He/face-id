@@ -115,10 +115,9 @@ struct AboutSettingsPage: View {
                 title: "卸载系统服务",
                 subtitle: "停止并注销 Face ID 特权服务，不修改 PAM 配置",
                 buttonTitle: "卸载",
-                isEnabled: environment.systemAuthServiceStatus.canUnregister,
-                action: {
-                    environment.systemAuthServiceStatus.unregisterService()
-                }
+                isEnabled: environment.systemAuthServiceStatus.canUnregister
+            ) {
+                environment.systemAuthServiceStatus.unregisterService()
             }
 
             SettingsGroupDivider()
