@@ -45,7 +45,7 @@ final class SystemAuthServiceStatus {
         case .notFound:
             return "未找到 App 内嵌的 LaunchDaemon。请重新构建完整 App。"
         case .failed(let message):
-            return "系统服务管理失败：\\(message)"
+            return "系统服务管理失败：\(message)"
         }
     }
 
@@ -59,9 +59,9 @@ final class SystemAuthServiceStatus {
             if reason == FaceIDAuthXPCProtocol.notReadyReason {
                 return "XPC 已连接。服务端明确报告认证流程尚未启用。"
             }
-            return "XPC 已连接，但认证暂不可用（\\(reason)）。"
+            return "XPC 已连接，但认证暂不可用（\(reason)）。"
         case .failed(let message):
-            return "\\(message)。现有密码和 Touch ID 认证不受影响。"
+            return "\(message)。现有密码和 Touch ID 认证不受影响。"
         }
     }
 
@@ -156,7 +156,7 @@ final class SystemAuthServiceStatus {
         case .invalidTeamIdentifier:
             return "当前应用的 Team ID 格式无效"
         case .connectionSetupFailed(let status):
-            return "无法配置系统服务签名校验（\\(status)）"
+            return "无法配置系统服务签名校验（\(status)）"
         case .timedOut:
             return "系统服务响应超时"
         case .connectionFailed:
