@@ -124,7 +124,7 @@ AuthorizationDB, SIP, or FileVault setting is changed by this phase.
 The IPC library now includes a one-shot status client:
 
 - Reads the Team ID from the current process's code signature using Security.framework.
-- Builds a daemon requirement pinning both com.mubai.faceid.authd and the same Team ID.
+- Builds a daemon requirement pinning the executable signing identifier `faceid-authd` and the same Team ID.
 - Applies the peer code-signing requirement before activating the XPC connection.
 - Sends only protocol version 1 and the status operation.
 - Verifies that the reply peer has EUID 0, checks protocol version and known response reasons, and rejects any status other than unavailable.
