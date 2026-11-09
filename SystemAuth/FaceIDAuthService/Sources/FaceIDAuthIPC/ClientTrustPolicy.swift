@@ -17,8 +17,8 @@ public enum ClientTrustPolicyError: Error, Equatable {
 /// This removes mutable on-disk trust configuration from the installation
 /// path. An ad-hoc or unsigned daemon has no Team ID and refuses to start.
 public struct ClientTrustPolicy: Sendable {
-    public static let expectedSigningIdentifier = "com.joeqiao.faceid"
-    public static let expectedDaemonSigningIdentifier = "com.joeqiao.faceid.authd"
+    public static let expectedSigningIdentifier = "com.mubai.faceid"
+    public static let expectedDaemonSigningIdentifier = "com.mubai.faceid.authd"
 
     public let codeSigningRequirement: String
 
