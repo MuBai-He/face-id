@@ -28,7 +28,7 @@
 
 /* Begin PBXFileReference section */
 		B10000000000000000000002 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceIDAuthService/Sources/FaceIDAuthDaemon/main.swift; sourceTree = "<group>"; };
-		B10000000000000000000003 /* com.joeqiao.faceid.authd.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = com.joeqiao.faceid.authd.plist; sourceTree = "<group>"; };
+		B10000000000000000000003 /* com.joeqiao.faceid.authd.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = LaunchDaemon/com.joeqiao.faceid.authd.plist; sourceTree = "<group>"; };
 		B10000000000000000000004 /* faceid-authd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = faceid-authd; sourceTree = BUILT_PRODUCTS_DIR; };
 
 		601C493C300FFC8400D3DE9D /* Face ID.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Face ID.app"; sourceTree = BUILT_PRODUCTS_DIR; };
