@@ -20,7 +20,7 @@ public enum FaceIDAuthXPCProtocol {
 
 
 extension FaceIDAuthXPCProtocol {
-    public static let daemonSigningIdentifier = "com.mubai.faceid.authd"
+    public static let daemonSigningIdentifier = "faceid-authd"
 
     /// Builds the exact daemon requirement from the signed app's own Team ID.
     /// The client must never accept a daemon Team ID supplied by the daemon.
