@@ -54,14 +54,14 @@ final class SystemAuthServiceStatus {
                     case .success(let response):
                         self.state = .connected(reason: response.reason)
                     case .failure(let error):
-                        self.state = .failed(Self.message(for: error))
+                        self.state = .failed(message: Self.message(for: error))
                     }
                 }
             }
         } catch let error as FaceIDAuthXPCClientError {
-            state = .failed(Self.message(for: error))
+            state = .failed(message: Self.message(for: error))
         } catch {
-            state = .failed("无法启动系统服务检查")
+            state = .failed(message: "无法启动系统服务检查")
         }
     }
 
