@@ -1,0 +1,5 @@
+PAM/pam_faceid.so
+Daemon/faceid-authd-probe
+*.o
+__pycache__/
+*.pyc

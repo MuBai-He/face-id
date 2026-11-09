@@ -79,11 +79,66 @@ struct AboutSettingsPage: View {
             SettingsGroupDivider()
 
             SettingsActionRowContent(
+                title: "系统服务状态",
+                subtitle: environment.systemAuthServiceStatus.registrationDescription,
+                buttonTitle: "刷新",
+                isEnabled: true
+            ) {
+                environment.systemAuthServiceStatus.refreshRegistrationStatus()
+            }
+
+            SettingsGroupDivider()
+
+            SettingsActionRowContent(
+                title: "安装系统服务",
+                subtitle: "通过 macOS Service Management 注册，需由你在系统设置中批准",
+                buttonTitle: "安装",
+                isEnabled: environment.systemAuthServiceStatus.canRegister
+            ) {
+                environment.systemAuthServiceStatus.registerService()
+            }
+
+            SettingsGroupDivider()
+
+            SettingsActionRowContent(
+                title: "批准后台服务",
+                subtitle: "仅当系统要求批准时使用",
+                buttonTitle: "打开设置",
+                isEnabled: environment.systemAuthServiceStatus.canOpenLoginItems
+            ) {
+                environment.systemAuthServiceStatus.openLoginItemsSettings()
+            }
+
+            SettingsGroupDivider()
+
+            SettingsActionRowContent(
+                title: "卸载系统服务",
+                subtitle: "停止并注销 Face ID 特权服务，不修改 PAM 配置",
+                buttonTitle: "卸载",
+                isEnabled: environment.systemAuthServiceStatus.canUnregister
+            ) {
+                environment.systemAuthServiceStatus.unregisterService()
+            }
+
+            SettingsGroupDivider()
+
+            SettingsActionRowContent(
+                title: "XPC 连接诊断",
+                subtitle: environment.systemAuthServiceStatus.connectionDescription,
+                buttonTitle: environment.systemAuthServiceStatus.isCheckingConnection ? "检查中" : "检查",
+                isEnabled: !environment.systemAuthServiceStatus.isCheckingConnection
+            ) {
+                environment.systemAuthServiceStatus.checkConnection()
+            }
+
+            SettingsGroupDivider()
+
+            SettingsActionRowContent(
                 title: "GitHub 项目主页",
-                subtitle: "joe0515/face-id",
+                subtitle: "MuBai-He/face-id",
                 buttonTitle: "打开"
             ) {
-                if let url = URL(string: "https://github.com/joe0515/face-id") {
+                if let url = URL(string: "https://github.com/MuBai-He/face-id") {
                     NSWorkspace.shared.open(url)
                 }
             }
@@ -95,7 +150,7 @@ struct AboutSettingsPage: View {
                 subtitle: "在 GitHub 上提交问题",
                 buttonTitle: "发送"
             ) {
-                if let url = URL(string: "https://github.com/joe0515/face-id/issues") {
+                if let url = URL(string: "https://github.com/MuBai-He/face-id/issues") {
                     NSWorkspace.shared.open(url)
                 }
             }

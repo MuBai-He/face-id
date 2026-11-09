@@ -1,0 +1,62 @@
+name: PAM bootstrap
+
+on:
+  pull_request:
+    paths:
+      - 'SystemAuth/**'
+      - 'FaceID/**'
+      - 'Face ID.xcodeproj/**'
+      - 'FaceID/Domain/Face/FaceRecognitionPipeline.swift'
+      - '.github/workflows/pam-bootstrap.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pam-bootstrap-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  transport:
+    name: Transport (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Compile against the real macOS PAM SDK
+        if: runner.os == 'macOS'
+        run: |
+          make -C SystemAuth/PAM
+          make -C SystemAuth/Daemon
+      - name: Protected template store tests
+        if: runner.os == 'macOS'
+        run: swift test --package-path SystemAuth/FaceIDAuthService
+      - name: Build privileged XPC daemon
+        if: runner.os == 'macOS'
+        run: swift build --package-path SystemAuth/FaceIDAuthService --product faceid-authd
+      - name: Build Face ID XPC client module
+        if: runner.os == 'macOS'
+        run: swift build --package-path SystemAuth/FaceIDAuthService --target FaceIDAuthIPC
+      - name: Build Face ID app with local authentication package
+        if: runner.os == 'macOS'
+        run: xcodebuild -project "Face ID.xcodeproj" -scheme "Face ID" -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build
+      - name: Validate embedded LaunchDaemon plist
+        if: runner.os == 'macOS'
+        run: plutil -lint SystemAuth/LaunchDaemon/com.mubai.faceid.authd.plist
+      - name: Verify SMAppService bundle layout
+        if: runner.os == 'macOS'
+        run: |
+          grep -q '<key>BundleProgram</key>' SystemAuth/LaunchDaemon/com.mubai.faceid.authd.plist
+          grep -q 'Contents/Library/PrivilegedHelperTools/faceid-authd' SystemAuth/LaunchDaemon/com.mubai.faceid.authd.plist
+      - name: Validate LaunchDaemon property list
+        if: runner.os == 'macOS'
+        run: plutil -lint SystemAuth/LaunchDaemon/com.mubai.faceid.authd.plist
+      - name: Isolated control-flow and protocol tests
+        run: sudo "$(command -v python3)" SystemAuth/tests/test_pam_transport.py

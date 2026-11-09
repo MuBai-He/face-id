@@ -66,7 +66,7 @@ enum GitHubUpdateError: LocalizedError {
 }
 
 enum GitHubReleaseChecker {
-    static let repo = "joe0515/face-id"
+    static let repo = "MuBai-He/face-id"
     private static let apiURL = URL(string: "https://api.github.com/repos/\(repo)/releases/latest")!
 
     /// The running app's short version string, e.g. "1.1".

@@ -21,10 +21,10 @@ nonisolated enum FIDConstants {
     static let appName = "Face ID"
 
     /// Bundle 标识符（须与 project.pbxproj 的 PRODUCT_BUNDLE_IDENTIFIER 一致）。
-    static let bundleIdentifier = "com.joeqiao.faceid"
+    static let bundleIdentifier = "com.mubai.faceid"
 
     /// Keychain service 名。整机解锁与应用加锁共用同一命名空间。
-    static let keychainService = "com.joeqiao.faceid"
+    static let keychainService = "com.mubai.faceid"
 
     // MARK: - 命名空间 Namespacing
 

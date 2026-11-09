@@ -52,6 +52,19 @@ final class FaceRecognitionPipeline {
         }
     }
 
+    /// System authentication must not silently switch to Vision Feature Print.
+    /// Only the ArcFace recognizer is allowed on this higher-risk path.
+    private init(systemAuthEmbedder: ArcFaceEmbedder) {
+        embedder = systemAuthEmbedder
+        usingFallbackEmbedder = false
+        fallbackReason = nil
+    }
+
+    /// Throws if the ArcFace Core ML model is unavailable or invalid.
+    static func forSystemAuthentication() throws -> FaceRecognitionPipeline {
+        try FaceRecognitionPipeline(systemAuthEmbedder: ArcFaceEmbedder())
+    }
+
     /// `nonisolated` so callers can run detect/align/embed from a background task instead of blocking the main actor.
     /// - Parameter previousBoundingBox: previous frame's selected box, if any — lets a continuous scanner keep selection "stuck" to the same person instead of re-picking every frame.
     nonisolated func recognize(in frame: CGImage, preferNear previousBoundingBox: CGRect? = nil) throws -> FaceRecognitionResult {
