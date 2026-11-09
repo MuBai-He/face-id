@@ -41,7 +41,7 @@ public enum FaceIDTemplateMatcher {
         guard requestedUID != 0 else {
             throw FaceIDTemplateMatcherError.invalidRequestedUID
         }
-        guard threshold.isFinite, threshold > 0, threshold <= 1,
+        guard threshold.isFinite, threshold >= 0.30, threshold <= 1,
               minimumSamples >= topKSampleCount else {
             throw FaceIDTemplateMatcherError.invalidThreshold
         }
@@ -104,8 +104,11 @@ public enum FaceIDTemplateMatcher {
         guard let first = vectors.first, !first.isEmpty else { return nil }
         var sum = [Float](repeating: 0, count: first.count)
         for vector in vectors {
+            let normSquared = vector.reduce(Float.zero) { $0 + $1 * $1 }
+            guard normSquared.isFinite, normSquared > 1.0e-12 else { return nil }
+            let inverseNorm = 1.0 / sqrt(normSquared)
             for index in 0..<vector.count {
-                sum[index] += vector[index]
+                sum[index] += vector[index] * inverseNorm
             }
         }
         let mean = sum.map { $0 / Float(vectors.count) }
