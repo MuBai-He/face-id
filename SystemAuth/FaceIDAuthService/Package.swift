@@ -5,10 +5,15 @@ let package = Package(
     name: "FaceIDAuthService",
     platforms: [.macOS(.v15)],
     products: [
-        .library(name: "FaceIDAuthStore", targets: ["FaceIDAuthStore"])
+        .library(name: "FaceIDAuthStore", targets: ["FaceIDAuthStore"]),
+        .library(name: "FaceIDAuthRecognition", targets: ["FaceIDAuthRecognition"])
     ],
     targets: [
         .target(name: "FaceIDAuthStore"),
-        .testTarget(name: "FaceIDAuthStoreTests", dependencies: ["FaceIDAuthStore"])
+        .target(name: "FaceIDAuthRecognition"),
+        .testTarget(
+            name: "FaceIDAuthStoreTests",
+            dependencies: ["FaceIDAuthStore", "FaceIDAuthRecognition"]
+        )
     ]
 )
